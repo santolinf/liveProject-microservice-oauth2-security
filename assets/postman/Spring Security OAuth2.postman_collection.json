@@ -1,0 +1,341 @@
+{
+	"info": {
+		"_postman_id": "3acbdd2d-2eba-4648-a0ad-f912ba6dd3c8",
+		"name": "Spring Security OAuth2",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Password Grant Token",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "secret",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "client",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/oauth/token?grant_type=password&username=user&password=password&scope=read",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"oauth",
+						"token"
+					],
+					"query": [
+						{
+							"key": "grant_type",
+							"value": "password"
+						},
+						{
+							"key": "username",
+							"value": "user"
+						},
+						{
+							"key": "password",
+							"value": "password"
+						},
+						{
+							"key": "scope",
+							"value": "read"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Authorization Code Grant (Step 1)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var text = pm.response.text();\r",
+							"var startCsrf = text.slice(text.search(/_csrf\".*value=/));\r",
+							"var startValue = startCsrf.slice(startCsrf.search(/value=/));\r",
+							"var _csrf = startValue.substr(7, 36);\r",
+							"pm.collectionVariables.set('_csrf', _csrf);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const jar = pm.cookies.jar();\r",
+							"\r",
+							"jar.clear(pm.request.url, function (error) {\r",
+							"  // error - <Error>\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/oauth/authorize?response_type=code&client_id=client&scope=read",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"oauth",
+						"authorize"
+					],
+					"query": [
+						{
+							"key": "response_type",
+							"value": "code"
+						},
+						{
+							"key": "client_id",
+							"value": "client"
+						},
+						{
+							"key": "scope",
+							"value": "read"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User Login (Step 2)",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var _csrf = pm.collectionVariables.get('_csrf');\r",
+							"pm.request.body.urlencoded = [ { key: '_csrf', value: _csrf }, { key: 'username', value: 'user' }, { key: 'password', value: 'password' } ];"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var text = pm.response.text();\r",
+							"var startCsrf = text.slice(text.search(/_csrf\".*value=/));\r",
+							"var startValue = startCsrf.slice(startCsrf.search(/value=/));\r",
+							"var _csrf = startValue.substr(7, 36);\r",
+							"pm.collectionVariables.set('_csrf', _csrf);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": []
+				},
+				"url": {
+					"raw": "http://localhost:8080/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "OAuth Approval (Step 3)",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var _csrf = pm.collectionVariables.get('_csrf');\r",
+							"pm.request.body.urlencoded = [ { key: '_csrf', value: _csrf }, { key: 'user_oauth_approval', value: 'true' } ];"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var location = pm.response.headers.get('Location');\r",
+							"var code = location.slice(location.search(/code=/));\r",
+							"var _auth_code = code.substr(5);\r",
+							"pm.collectionVariables.set('_auth_code', _auth_code);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"followRedirects": false
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": []
+				},
+				"url": {
+					"raw": "http://localhost:8080/oauth/authorize",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"oauth",
+						"authorize"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Authorization Code Grant Token (Step 4)",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var _auth_code = pm.collectionVariables.get('_auth_code');\r",
+							"pm.request.url.query.add({key: 'code', value: _auth_code});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "secret",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "client",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/oauth/token?grant_type=authorization_code&scope=read",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"oauth",
+						"token"
+					],
+					"query": [
+						{
+							"key": "grant_type",
+							"value": "authorization_code"
+						},
+						{
+							"key": "scope",
+							"value": "read"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Client Credentials Grant Token",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "secret1",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "client1",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/oauth/token?grant_type=client_credentials&scope=info",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"oauth",
+						"token"
+					],
+					"query": [
+						{
+							"key": "grant_type",
+							"value": "client_credentials"
+						},
+						{
+							"key": "scope",
+							"value": "info"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "_csrf",
+			"value": ""
+		},
+		{
+			"key": "_auth_code",
+			"value": ""
+		}
+	]
+}
