@@ -2,7 +2,7 @@ package com.liveproject.oauth2.authorization.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.liveproject.oauth2.authorization.server.AuthorizationServerApp;
-import com.liveproject.oauth2.authorization.server.controller.dto.UserDto;
+import com.liveproject.oauth2.authorization.server.controller.dto.ClientDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 @SpringBootTest(classes = AuthorizationServerApp.class)
 @AutoConfigureMockMvc
-public class UserControllerTest {
+public class ClientControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -32,42 +32,46 @@ public class UserControllerTest {
     private MockMvc mockMvc;
 
     @Test
-    @DisplayName("given that the user does not exist in the database, assert that the new user details are added to the database")
-    public void givenNewUser_whenAddingUserDetails_thenAssertUserIsAdded() throws Exception {
-        UserDto userPayload = UserDto.builder()
-                .username("user3")
-                .password("password")
+    @DisplayName("given that the client does not exist in the database, assert that the new client details are added to the database")
+    public void givenNewClient_whenAddingClientDetails_thenAssertClientIsAdded() throws Exception {
+        ClientDto clientPayload = ClientDto.builder()
+                .clientId("client3")
+                .secret("secret")
+                .scope("read")
+                .redirectUri("http://localhost/login")
                 .build();
 
-        mockMvc.perform(post("/users")
+        mockMvc.perform(post("/clients")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(userPayload))
+                        .content(objectMapper.writeValueAsString(clientPayload))
                 )
                 .andDo(print()).andExpect(status().isCreated());
 
-        mockMvc.perform(get("/users"))
+        mockMvc.perform(get("/clients"))
                 .andDo(print()).andExpect(status().isOk())
-                .andExpect(jsonPath("$..username").value(hasItems("user3")))
-                .andExpect(jsonPath("$..password").value(hasItems(nullValue())));
+                .andExpect(jsonPath("$..clientId").value(hasItems("client3")))
+                .andExpect(jsonPath("$..secret").value(hasItems(nullValue())));
     }
 
     @Test
-    @DisplayName("given that the user already exists in the database, assert that attempting to add the same user details is not allowed")
-    public void givenExistingUser_whenAddingSameUser_thenReturnError() throws Exception {
-        UserDto userPayload = UserDto.builder()
-                .username("user4")
-                .password("password")
+    @DisplayName("given that the client already exists in the database, assert that attempting to add the same client details is not allowed")
+    public void givenExistingClient_whenAddingSameClient_thenReturnError() throws Exception {
+        ClientDto clientPayload = ClientDto.builder()
+                .clientId("client4")
+                .secret("secret")
+                .scope("read")
+                .redirectUri("http://localhost/login")
                 .build();
 
-        mockMvc.perform(post("/users")
+        mockMvc.perform(post("/clients")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(userPayload))
+                        .content(objectMapper.writeValueAsString(clientPayload))
                 )
                 .andDo(print()).andExpect(status().isCreated());
 
-        mockMvc.perform(post("/users")
+        mockMvc.perform(post("/clients")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(userPayload))
+                        .content(objectMapper.writeValueAsString(clientPayload))
                 )
                 .andDo(print()).andExpect(status().isBadRequest());
     }

@@ -11,11 +11,13 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDto {
+public class ClientDto {
 
     private long id;
-    private String username;
-    private String password;
+    private String clientId;
+    private String secret;
+    private String scope;
+    private String redirectUri;
 
-    private List<AuthorityDto> authorities;
+    private List<GrantTypeDto> grantTypes;
 }
