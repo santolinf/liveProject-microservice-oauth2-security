@@ -17,3 +17,22 @@ create table if not exists authority (
 
 alter table authority drop constraint if exists FKauthorityusers;
 alter table authority add constraint FKauthorityusers foreign key (user_id) references users (id);
+
+create table if not exists client (
+    id bigserial not null,
+    client_id varchar(255) not null unique,
+    secret varchar(255) not null,
+    scope varchar(255),
+    redirect_uri varchar(255),
+    primary key (id)
+);
+
+create table if not exists grant_type (
+    id bigserial not null,
+    grant_type varchar(255),
+    client_id bigint not null,
+    primary key (id)
+);
+
+alter table grant_type drop constraint if exists FKgranttypeclient;
+alter table grant_type add constraint FKgranttypeclient foreign key (client_id) references client (id);

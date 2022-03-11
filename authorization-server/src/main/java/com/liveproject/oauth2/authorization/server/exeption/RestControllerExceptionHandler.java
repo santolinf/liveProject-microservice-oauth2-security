@@ -13,4 +13,10 @@ public class RestControllerExceptionHandler {
     public String handleUserAlreadyExists(UserAlreadyExistsException ex) {
         return "User already exists: " + ex.getMessage();
     }
+
+    @ExceptionHandler(ClientAlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String handleClientAlreadyExists(ClientAlreadyExistsException ex) {
+        return "Client already exists: " + ex.getMessage();
+    }
 }
