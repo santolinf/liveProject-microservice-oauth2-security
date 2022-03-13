@@ -291,7 +291,7 @@
 					"basic": [
 						{
 							"key": "password",
-							"value": "secret1",
+							"value": "secret",
 							"type": "string"
 						},
 						{
@@ -358,7 +358,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"username\": \"frank\",\r\n    \"password\": \"password\",\r\n    \"authorities\": [\r\n        {\r\n            \"name\": \"read\"\r\n        },\r\n        {\r\n            \"name\": \"write\"\r\n        }\r\n    ]\r\n}"
+					"raw": "{\r\n    \"username\": \"user\",\r\n    \"password\": \"password\",\r\n    \"authorities\": [\r\n        {\r\n            \"name\": \"read\"\r\n        },\r\n        {\r\n            \"name\": \"write\"\r\n        }\r\n    ]\r\n}"
 				},
 				"url": {
 					"raw": "localhost:8080/users",

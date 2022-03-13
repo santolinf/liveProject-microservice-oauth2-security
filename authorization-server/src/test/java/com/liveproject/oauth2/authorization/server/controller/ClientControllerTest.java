@@ -1,16 +1,10 @@
-package com.liveproject.oauth2.authorization.controller;
+package com.liveproject.oauth2.authorization.server.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.liveproject.oauth2.authorization.server.AuthorizationServerApp;
+import com.liveproject.oauth2.authorization.server.BaseTests;
 import com.liveproject.oauth2.authorization.server.controller.dto.ClientDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.core.IsNull.nullValue;
@@ -20,16 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ActiveProfiles("test")
-@SpringBootTest(classes = AuthorizationServerApp.class)
-@AutoConfigureMockMvc
-public class ClientControllerTest {
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
-    private MockMvc mockMvc;
+public class ClientControllerTest extends BaseTests {
 
     @Test
     @DisplayName("given that the client does not exist in the database, assert that the new client details are added to the database")
