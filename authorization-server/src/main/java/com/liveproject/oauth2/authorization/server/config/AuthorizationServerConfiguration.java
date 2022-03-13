@@ -34,14 +34,14 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clients.inMemory()
                 .withClient("client")
-                .secret("secret")
+                .secret("$2a$10$2ZKjVqtpUJiuckq2urVG9OIwF5RVILPJbaXuwiwKxFdEVrBInCed.")
                 .authorizedGrantTypes("authorization_code", "password", "refresh_token")
                 .scopes("read")
                 .redirectUris("http://localhost:3002/login")
 
                 .and()
                 .withClient("client1")
-                .secret("secret1")
+                .secret("$2a$10$2ZKjVqtpUJiuckq2urVG9OIwF5RVILPJbaXuwiwKxFdEVrBInCed.")
                 .authorizedGrantTypes("client_credentials")
                 .scopes("info")
         ;
