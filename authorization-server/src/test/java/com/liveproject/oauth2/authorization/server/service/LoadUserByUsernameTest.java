@@ -23,7 +23,7 @@ public class LoadUserByUsernameTest extends BaseTests {
             userDetailsService.loadUserByUsername(username);
         });
 
-        assertThat(error.getMessage()).isEqualTo("user1");
+        assertThat(error.getMessage()).isEqualTo(username);
     }
 
     @Test

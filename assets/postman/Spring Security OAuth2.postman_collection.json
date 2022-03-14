@@ -290,13 +290,13 @@
 					"type": "basic",
 					"basic": [
 						{
-							"key": "password",
-							"value": "secret",
+							"key": "username",
+							"value": "client",
 							"type": "string"
 						},
 						{
-							"key": "username",
-							"value": "client1",
+							"key": "password",
+							"value": "secret",
 							"type": "string"
 						}
 					]
@@ -304,7 +304,7 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "localhost:8080/oauth/token?grant_type=client_credentials&scope=info",
+					"raw": "localhost:8080/oauth/token?grant_type=client_credentials&scope=read",
 					"host": [
 						"localhost"
 					],
@@ -320,7 +320,7 @@
 						},
 						{
 							"key": "scope",
-							"value": "info"
+							"value": "read"
 						}
 					]
 				}
@@ -404,7 +404,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"clientId\": \"client1\",\r\n    \"secret\": \"secret\",\r\n    \"scope\": \"read\",\r\n    \"redirectUri\": \"http://localhost/login\",\r\n    \"grantTypes\": [\r\n        {\r\n            \"grantType\": \"password\"\r\n        },\r\n        {\r\n            \"grantType\": \"authorization_code\"\r\n        },\r\n        {\r\n            \"grantType\": \"refresh_token\"\r\n        }\r\n    ]\r\n}"
+					"raw": "{\r\n    \"clientId\": \"client\",\r\n    \"secret\": \"secret\",\r\n    \"scope\": \"read\",\r\n    \"redirectUri\": \"http://localhost/login\",\r\n    \"grantTypes\": [\r\n        {\r\n            \"grantType\": \"password\"\r\n        },\r\n        {\r\n            \"grantType\": \"authorization_code\"\r\n        },\r\n        {\r\n            \"grantType\": \"refresh_token\"\r\n        },\r\n        {\r\n            \"grantType\": \"client_credentials\"\r\n        }\r\n    ]\r\n}"
 				},
 				"url": {
 					"raw": "localhost:8080/clients",
