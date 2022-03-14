@@ -19,6 +19,6 @@ public class Client {
     private String scope;
     private String redirectUri;
 
-    @OneToMany(mappedBy = "client", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "client", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     private List<GrantType> grantTypes;
 }

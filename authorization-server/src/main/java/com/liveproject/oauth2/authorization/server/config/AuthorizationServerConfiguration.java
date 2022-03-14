@@ -1,9 +1,10 @@
 package com.liveproject.oauth2.authorization.server.config;
 
+import com.liveproject.oauth2.authorization.server.service.ApplicationClientDetailsService;
+import com.liveproject.oauth2.authorization.server.service.ApplicationUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
@@ -18,7 +19,8 @@ import org.springframework.security.oauth2.provider.token.TokenStore;
 public class AuthorizationServerConfiguration extends AuthorizationServerConfigurerAdapter {
 
     private final AuthenticationManager authenticationManager;
-    private final UserDetailsService userDetailsService;
+    private final ApplicationUserDetailsService userDetailsService;
+    private final ApplicationClientDetailsService clientDetailsService;
     private final TokenStore tokenStore;
     private final AccessTokenConverter accessTokenConverter;
 
@@ -32,19 +34,7 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-        clients.inMemory()
-                .withClient("client")
-                .secret("$2a$10$2ZKjVqtpUJiuckq2urVG9OIwF5RVILPJbaXuwiwKxFdEVrBInCed.")
-                .authorizedGrantTypes("authorization_code", "password", "refresh_token")
-                .scopes("read")
-                .redirectUris("http://localhost:3002/login")
-
-                .and()
-                .withClient("client1")
-                .secret("$2a$10$2ZKjVqtpUJiuckq2urVG9OIwF5RVILPJbaXuwiwKxFdEVrBInCed.")
-                .authorizedGrantTypes("client_credentials")
-                .scopes("info")
-        ;
+        clients.withClientDetails(clientDetailsService);
     }
 
     @Override
