@@ -1,5 +1,6 @@
 package com.liveproject.oauth2.resource.health.services;
 
+import com.liveproject.oauth2.resource.health.security.context.TestUser;
 import com.liveproject.oauth2.resource.health.entities.HealthProfile;
 import com.liveproject.oauth2.resource.health.exceptions.HealthProfileAlreadyExistsException;
 import com.liveproject.oauth2.resource.health.exceptions.NonExistentHealthProfileException;
@@ -27,6 +28,7 @@ public class HeathProfileServiceTest {
     private HealthProfileRepository healthProfileRepository;
 
     @Test
+    @TestUser(username = "paolo")
     @DisplayName("given a new profile, assert that the profile is added to the database")
     public void givenNewProfile_assertProfileIsAddedToTheDatabase() {
         HealthProfile profile = new HealthProfile();
@@ -36,6 +38,7 @@ public class HeathProfileServiceTest {
     }
 
     @Test
+    @TestUser(username = "paul")
     @DisplayName("given an existing profile, assert that the profile is not added to the database")
     public void givenExistingProfile_assertProfileIsNotAddedToTheDatabase() {
         HealthProfile profile = new HealthProfile();
@@ -49,6 +52,7 @@ public class HeathProfileServiceTest {
     }
 
     @Test
+    @TestUser(username = "paul")
     @DisplayName("given an existing profile, assert that the profile is returned")
     public void givenExistingProfile_whenFindProfile_assertProfileIsReturned() {
         HealthProfile profile = healthProfileService.findHealthProfile("paul");
@@ -57,6 +61,7 @@ public class HeathProfileServiceTest {
     }
 
     @Test
+    @TestUser(username = "paul", authorities = "admin")
     @DisplayName("given a non existing profile, assert error")
     public void givenNonExistingProfile_whenFindProfile_assertError() {
         var error = assertThrows(NonExistentHealthProfileException.class, () -> {
@@ -67,6 +72,7 @@ public class HeathProfileServiceTest {
     }
 
     @Test
+    @TestUser(username = "paul", authorities = "admin")
     @DisplayName("given an existing profile, assert that the profile is deleted")
     public void givenExistingProfile_whenDeleteProfile_assertProfileIsDeleted() {
         healthProfileService.deleteHealthProfile("yvette");
@@ -76,6 +82,7 @@ public class HeathProfileServiceTest {
     }
 
     @Test
+    @TestUser(username = "paul", authorities = "admin")
     @DisplayName("given a non existing profile, assert then when deleting profile an error is returned")
     public void givenNonExistingProfile_whenDeleteProfile_assertError() {
         var error = assertThrows(NonExistentHealthProfileException.class, () -> {

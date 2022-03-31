@@ -1,5 +1,6 @@
 package com.liveproject.oauth2.resource.health.services;
 
+import com.liveproject.oauth2.resource.health.security.context.TestUser;
 import com.liveproject.oauth2.resource.health.entities.HealthMetric;
 import com.liveproject.oauth2.resource.health.entities.HealthProfile;
 import com.liveproject.oauth2.resource.health.entities.enums.HealthMetricType;
@@ -41,6 +42,7 @@ public class HeathMetricServiceTest {
     }
 
     @Test
+    @TestUser(username = "paul")
     @DisplayName("given an existing profile, assert that metrics are added to the database")
     public void givenExistingProfile_assertMetricIsAddedToTheDatabase() {
         HealthMetric metric = createDefaultMetricFor("paul");
@@ -48,6 +50,7 @@ public class HeathMetricServiceTest {
     }
 
     @Test
+    @TestUser(username = "jane")
     @DisplayName("given an existing metric, assert that the metric is not added to the database")
     public void givenExistingMetric_assertMetricIsNotAddedToTheDatabase() {
         HealthMetric metric = createDefaultMetricFor("jane");
@@ -68,6 +71,7 @@ public class HeathMetricServiceTest {
     }
 
     @Test
+    @TestUser(username = "paul", authorities = "admin")
     @DisplayName("given an existing profile, assert that the metrics are deleted")
     public void givenExistingProfile_whenDeleteMetric_assertMetricsAreDeleted() {
         healthMetricService.deleteHealthMetricForUser("yvette");
@@ -77,6 +81,7 @@ public class HeathMetricServiceTest {
     }
 
     @Test
+    @TestUser(username = "paul", authorities = "admin")
     @DisplayName("given a non existing profile, assert then when deleting metrics an error is returned")
     public void givenNonExistingProfile_whenDeleteMetric_assertError() {
         var error = assertThrows(NonExistentHealthProfileException.class, () -> {
