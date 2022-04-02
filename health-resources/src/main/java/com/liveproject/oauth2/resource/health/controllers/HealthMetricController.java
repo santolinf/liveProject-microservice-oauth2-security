@@ -19,9 +19,9 @@ public class HealthMetricController {
     healthMetricService.addHealthMetric(healthMetric);
   }
 
-  @GetMapping("/{username}")
-  public List<HealthMetric> findHealthMetrics(@PathVariable String username) {
-    return healthMetricService.findHealthMetricHistory(username);
+  @GetMapping("")
+  public List<HealthMetric> findHealthMetrics() {
+    return healthMetricService.findHealthMetricHistory();
   }
 
   @DeleteMapping("/{username}")
