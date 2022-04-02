@@ -63,20 +63,21 @@ public class HeathMetricServiceTest {
     }
 
     @Test
+    @TestUser(username = "paul")
     @DisplayName("given existing metric history, assert that the metrics are returned")
     public void givenExistingMetricHistory_whenFindMetrics_assertHistoryIsReturned() {
-        List<HealthMetric> metrics = healthMetricService.findHealthMetricHistory("paul");
+        List<HealthMetric> metrics = healthMetricService.findHealthMetricHistory();
 
         assertThat(metrics).isNotEmpty();
     }
 
     @Test
-    @TestUser(username = "paul", authorities = "admin")
+    @TestUser(username = "nick", authorities = "admin")
     @DisplayName("given an existing profile, assert that the metrics are deleted")
     public void givenExistingProfile_whenDeleteMetric_assertMetricsAreDeleted() {
-        healthMetricService.deleteHealthMetricForUser("yvette");
+        healthMetricService.deleteHealthMetricForUser("nick");
 
-        assertThat(healthMetricRepository.findHealthMetricHistory("yvette")).isEmpty();
+        assertThat(healthMetricRepository.findHealthMetricHistory()).isEmpty();
 
     }
 

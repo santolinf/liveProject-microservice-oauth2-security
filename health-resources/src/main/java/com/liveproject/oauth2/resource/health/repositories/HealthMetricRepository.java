@@ -11,8 +11,8 @@ import java.util.List;
 
 public interface HealthMetricRepository extends JpaRepository<HealthMetric, Integer> {
 
-  @Query("SELECT h FROM HealthMetric h WHERE h.profile.username=:username")
-  List<HealthMetric> findHealthMetricHistory(@Param("username") String username);
+  @Query("SELECT h FROM HealthMetric h WHERE h.profile.username=?#{authentication.principal.claims['user_name']}")
+  List<HealthMetric> findHealthMetricHistory();
 
   @Query("DELETE FROM HealthMetric h WHERE h.profile=:profile")
   @Modifying
