@@ -130,7 +130,7 @@
 					"script": {
 						"exec": [
 							"var _csrf = pm.collectionVariables.get('_csrf');\r",
-							"pm.request.body.urlencoded = [ { key: '_csrf', value: _csrf }, { key: 'username', value: 'user' }, { key: 'password', value: 'password' } ];"
+							"pm.request.body.urlencoded = [ { key: '_csrf', value: _csrf }, { key: 'username', value: 'john' }, { key: 'password', value: 'password' } ];"
 						],
 						"type": "text/javascript"
 					}
@@ -231,6 +231,15 @@
 			"name": "Authorization Code Grant Token (Step 4)",
 			"event": [
 				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set('access_token', pm.response.json().access_token);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
 					"listen": "prerequest",
 					"script": {
 						"exec": [
@@ -304,7 +313,7 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "localhost:8080/oauth/token?grant_type=client_credentials&scope=read",
+					"raw": "localhost:8080/oauth/token?grant_type=client_credentials&scope=advice",
 					"host": [
 						"localhost"
 					],
@@ -320,7 +329,7 @@
 						},
 						{
 							"key": "scope",
-							"value": "read"
+							"value": "advice"
 						}
 					]
 				}
@@ -358,7 +367,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"username\": \"user\",\r\n    \"password\": \"password\",\r\n    \"authorities\": [\r\n        {\r\n            \"name\": \"read\"\r\n        },\r\n        {\r\n            \"name\": \"write\"\r\n        }\r\n    ]\r\n}"
+					"raw": "{\r\n    \"username\": \"john\",\r\n    \"password\": \"password\",\r\n    \"authorities\": [\r\n        {\r\n            \"name\": \"admin\"\r\n        },\r\n        {\r\n            \"name\": \"write\"\r\n        }\r\n    ]\r\n}"
 				},
 				"url": {
 					"raw": "localhost:8080/users",
@@ -418,6 +427,478 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "/profile/john",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"",
+							"pm.test(\"Expecting Status code of 200, was \"+ pm.response.code, function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							" ",
+							"",
+							"pm.test(\"Body contains string\",() => {",
+							"  pm.expect(pm.response.text()).to.include(\"john\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:7070/profile/john",
+					"host": [
+						"localhost"
+					],
+					"port": "7070",
+					"path": [
+						"profile",
+						"john"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/profile -add a new {{username} -> success",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"",
+							"pm.test(\"Expecting Status code of 200, was \"+ pm.response.code, function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var uuid = require('uuid');  ",
+							"var username = uuid.v4(); ",
+							"console.log(\"saving username \"+username); ",
+							"pm.environment.set(\"username\",username)"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{  \n  \"username\": \"{{username}}\"\n}"
+				},
+				"url": {
+					"raw": "localhost:7070/profile",
+					"host": [
+						"localhost"
+					],
+					"port": "7070",
+					"path": [
+						"profile"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/profile -add same  {{username} again -> fail-already-exists",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"",
+							"pm.test(\"Expecting Status code of 400, was \"+ pm.response.code, function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"",
+							"pm.test(\"Body contains string\",() => {",
+							"  pm.expect(pm.response.text()).to.include('This health profile already exists.');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{  \n  \"username\": \"{{username}}\"\n}"
+				},
+				"url": {
+					"raw": "localhost:7070/profile",
+					"host": [
+						"localhost"
+					],
+					"port": "7070",
+					"path": [
+						"profile"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/profile/{{username}} ->success",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"",
+							"pm.test(\"Expecting Status code of 200, was \"+ pm.response.code, function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							" ",
+							"",
+							"pm.test(\"Body contains string\",() => {",
+							"  pm.expect(pm.response.text()).to.include(pm.environment.get('username'));",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "localhost:7070/profile/{{username}}",
+					"host": [
+						"localhost"
+					],
+					"port": "7070",
+					"path": [
+						"profile",
+						"{{username}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/profile/{{username}}",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"",
+							"pm.test(\"Expecting Status code of 200, was \"+ pm.response.code, function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"  "
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NDgyNTcxODYsInVzZXJfbmFtZSI6InVzZXIiLCJhdXRob3JpdGllcyI6WyJ3cml0ZSIsInJlYWQiXSwianRpIjoiNzllNDk2OWYtNGE1ZC00NWEwLWE2MWUtMjFmZTZhODY0ZGIwIiwiY2xpZW50X2lkIjoiY2xpZW50Iiwic2NvcGUiOlsicmVhZCJdfQ.PxoPi8dJ3mdnoWE34Wzn16fl37MzLb6Pf4aLxZXDyPPA9PYjJ9JR4Z06XLzbvLM3yTuLMKW53PXBbp-CvQXajfziLMPi0ESo5xICB-Szl-Zy8wkDmTAYJMwQJ3ZCSV3n4wrzQFmzbJNlm9_VAjbqUmZtiO_pCuz9D4pmAGAj8aJn3ji8Ny5YIlvVu12DBvTLNKK5qlHlGuu-TCPbm000lJTcgw00T8Gs8HFKyO7po9W-QjUYILkfasTw9fwWwPWqj-etO-CYMzTeLhkoK8sXSzhGUXrGCkXksAPh5aGnYMW7frmC79uF06gDMTmYzYcyEwqmAM9Y_VDC5KAl5aN0Jw",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:7070/profile/{{username}}",
+					"host": [
+						"localhost"
+					],
+					"port": "7070",
+					"path": [
+						"profile",
+						"{{username}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/profile/{{username}} -fail-not-found",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"",
+							"pm.test(\"Expecting Status code of 404, was \"+ pm.response.code, function () {",
+							"    pm.response.to.have.status(404);",
+							"});",
+							" ",
+							" "
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "localhost:7070/profile/{{username}}",
+					"host": [
+						"localhost"
+					],
+					"port": "7070",
+					"path": [
+						"profile",
+						"{{username}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/metric/john",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"",
+							"pm.test(\"Expecting Status code of 200, was \"+ pm.response.code, function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							" ",
+							"",
+							"pm.test(\"Body contains string\",() => {",
+							"  pm.expect(pm.response.text()).to.include(\"HEART_RATE\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "localhost:7070/metric/john",
+					"host": [
+						"localhost"
+					],
+					"port": "7070",
+					"path": [
+						"metric",
+						"john"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/metric add metric as john",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"",
+							"pm.test(\"Expecting Status code of 200, was \"+ pm.response.code, function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							" ",
+							"",
+							"pm.test(\"Body contains string\",() => {",
+							"  pm.expect(pm.response.text()).to.include(\"HEART_RATE\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"profile\": { \"username\": \"frank\"},\n  \"type\": \"BLOOD_OXYGEN_LEVEL\",\n  \"value\": 99\n}"
+				},
+				"url": {
+					"raw": "localhost:7070/metric",
+					"host": [
+						"localhost"
+					],
+					"port": "7070",
+					"path": [
+						"metric"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Client Advice",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[\r\n    {\r\n        \"username\": \"user\",\r\n        \"advice\": \"advice\"\r\n    }\r\n]"
+				},
+				"url": {
+					"raw": "http://localhost:5050/advice",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5050",
+					"path": [
+						"advice"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"variable": [
@@ -427,6 +908,10 @@
 		},
 		{
 			"key": "_auth_code",
+			"value": ""
+		},
+		{
+			"key": "access_token",
 			"value": ""
 		}
 	]
