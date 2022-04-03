@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf;
+import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockJwt;
 
 public class GatewayToProfileEndpointTest extends BaseTests {
 
@@ -20,7 +22,8 @@ public class GatewayToProfileEndpointTest extends BaseTests {
         wireMockServer.stubFor(WireMock.get(WireMock.urlMatching("/profile/john"))
                         .willReturn(aResponse().withStatus(OK.value())));
 
-        client.get()
+        client.mutateWith(mockJwt())
+                .get()
                 .uri("/profile/john")
                 .exchange()
                 .expectStatus().isOk();
@@ -34,7 +37,9 @@ public class GatewayToProfileEndpointTest extends BaseTests {
         wireMockServer.stubFor(WireMock.post(WireMock.urlMatching("/profile"))
                 .willReturn(aResponse().withStatus(OK.value())));
 
-        client.post()
+        client.mutateWith(mockJwt())
+                .mutateWith(csrf())
+                .post()
                 .uri("/profile")
                 .bodyValue(profile)
                 .exchange()
@@ -46,7 +51,9 @@ public class GatewayToProfileEndpointTest extends BaseTests {
         wireMockServer.stubFor(WireMock.delete(WireMock.urlMatching("/profile/john"))
                 .willReturn(aResponse().withStatus(OK.value())));
 
-        client.delete()
+        client.mutateWith(mockJwt())
+                .mutateWith(csrf())
+                .delete()
                 .uri("/profile/john")
                 .exchange()
                 .expectStatus().isOk();

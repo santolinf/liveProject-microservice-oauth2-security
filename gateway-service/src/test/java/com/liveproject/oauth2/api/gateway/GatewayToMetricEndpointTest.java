@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.liveproject.oauth2.api.gateway.model.enums.HealthMetricType.ECG;
 import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf;
+import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockJwt;
 
 public class GatewayToMetricEndpointTest extends BaseTests {
 
@@ -22,7 +24,8 @@ public class GatewayToMetricEndpointTest extends BaseTests {
         wireMockServer.stubFor(WireMock.get(WireMock.urlMatching("/metric"))
                         .willReturn(aResponse().withStatus(OK.value())));
 
-        client.get()
+        client.mutateWith(mockJwt())
+                .get()
                 .uri("/metric")
                 .exchange()
                 .expectStatus().isOk();
@@ -40,7 +43,9 @@ public class GatewayToMetricEndpointTest extends BaseTests {
         wireMockServer.stubFor(WireMock.post(WireMock.urlMatching("/metric"))
                 .willReturn(aResponse().withStatus(OK.value())));
 
-        client.post()
+        client.mutateWith(mockJwt())
+                .mutateWith(csrf())
+                .post()
                 .uri("/metric")
                 .bodyValue(metric)
                 .exchange()
@@ -52,7 +57,9 @@ public class GatewayToMetricEndpointTest extends BaseTests {
         wireMockServer.stubFor(WireMock.delete(WireMock.urlMatching("/metric/john"))
                 .willReturn(aResponse().withStatus(OK.value())));
 
-        client.delete()
+        client.mutateWith(mockJwt())
+                .mutateWith(csrf())
+                .delete()
                 .uri("/metric/john")
                 .exchange()
                 .expectStatus().isOk();
