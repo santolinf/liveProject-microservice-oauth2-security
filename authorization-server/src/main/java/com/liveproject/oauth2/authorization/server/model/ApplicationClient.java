@@ -58,7 +58,7 @@ public class ApplicationClient implements ClientDetails {
 
     @Override
     public Collection<GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("client"));
+        return List.of(new SimpleGrantedAuthority(client.getScope()));
     }
 
     @Override
