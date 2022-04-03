@@ -13,6 +13,7 @@
 
 	<modules>
 		<module>authorization-server</module>
+		<module>client-service</module>
 		<module>gateway-service</module>
 		<module>health-resources</module>
 	</modules>
